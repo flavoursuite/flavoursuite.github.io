@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlavourSuite — plugins that make WordPress agent-ready</title>
+<meta name="description" content="FlavourSuite builds WordPress plugins for the agent era: secure MCP connectivity, permission-checked tools, and an audit trail — off by default, always.">
+<meta property="og:title" content="FlavourSuite — plugins that make WordPress agent-ready">
+<meta property="og:description" content="Secure MCP connectivity for WordPress: permission-checked tools, audit trail, off by default.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://flavoursuite.github.io/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+<style>
+  :root {
+    --bg: #0f1216;
+    --panel: #171c23;
+    --border: #2a323d;
+    --text: #e8ecf1;
+    --muted: #9aa7b4;
+    --accent: #ff6b4a;
+    --ok: #4ade80;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  main { width: min(720px, 92%); margin: 0 auto; flex: 1; }
+  header { padding: 72px 0 40px; }
+  .brand { font-size: 15px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  h1 { font-size: clamp(30px, 5vw, 44px); line-height: 1.15; margin: 14px 0 18px; }
+  .lede { color: var(--muted); font-size: 19px; max-width: 58ch; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 28px;
+    margin: 36px 0;
+  }
+  .card h2 { font-size: 22px; margin-bottom: 6px; }
+  .tag { display: inline-block; font-size: 12.5px; color: var(--ok); border: 1px solid var(--ok); border-radius: 99px; padding: 1px 10px; margin-left: 8px; vertical-align: middle; }
+  .card p { color: var(--muted); margin: 12px 0; }
+  ul.checks { list-style: none; padding: 0; margin: 16px 0; color: var(--muted); }
+  ul.checks li { padding: 5px 0 5px 28px; position: relative; }
+  ul.checks li::before { content: "✓"; color: var(--ok); position: absolute; left: 4px; font-weight: 700; }
+  .btn {
+    display: inline-block; margin-top: 10px;
+    background: var(--accent); color: #14100e; font-weight: 650;
+    padding: 10px 22px; border-radius: 9px; text-decoration: none;
+  }
+  .btn.ghost { background: transparent; color: var(--text); border: 1px solid var(--border); margin-left: 10px; }
+  a { color: var(--accent); }
+  footer { border-top: 1px solid var(--border); margin-top: 48px; }
+  footer div { width: min(720px, 92%); margin: 0 auto; padding: 26px 0; color: var(--muted); font-size: 14.5px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand">FlavourSuite</div>
+    <h1>WordPress plugins for the agent era.</h1>
+    <p class="lede">AI agents are becoming how people work with websites. FlavourSuite builds the connective tissue — securely, transparently, and always under the site owner's control.</p>
+  </header>
+
+  <section class="card">
+    <h2>FlavourSuite AI <span class="tag">in development</span></h2>
+    <p>Make your WordPress site agent-ready. A Model Context Protocol (MCP) server built on the WordPress core Abilities API, so Claude, Cursor, ChatGPT and other MCP clients can work with your site through safe, structured tools.</p>
+    <ul class="checks">
+      <li><strong>Off by default</strong> — the endpoint doesn't exist until you enable it</li>
+      <li><strong>Permission-checked</strong> — agents act as a real WordPress user, never anonymously</li>
+      <li><strong>Read-only first</strong> — per-tool switches; anything that writes is opt-in</li>
+      <li><strong>Audited</strong> — see who called which tool, when, and whether it succeeded</li>
+      <li><strong>Private</strong> — no API keys, no outbound requests; your data stays on your site</li>
+      <li><strong>Plays well with others</strong> — WooCommerce and FluentCRM tools appear automatically</li>
+    </ul>
+    <a class="btn" href="https://github.com/flavoursuite/flavoursuite-ai">View on GitHub</a>
+  </section>
+
+  <section class="card">
+    <h2>Why "agent-ready" matters</h2>
+    <p>Agents that scrape pages get things wrong and see things they shouldn't. The right way is structured: named tools with schemas, WordPress capabilities enforced on every call, and a human-readable trail of everything that happened. That's what we build — on the same open standards WordPress itself is adopting.</p>
+  </section>
+</main>
+<footer>
+  <div>
+    <span>© 2026 FlavourSuite</span>
+    <span><a href="https://github.com/flavoursuite">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
