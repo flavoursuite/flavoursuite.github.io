@@ -100,39 +100,26 @@
     <li><strong>Install and activate</strong> the plugin (WordPress 6.9+, PHP 7.4+).</li>
     <li>Go to <strong>Settings → FlavourSuite AI</strong> and switch on <em>“Expose this site to AI agents over MCP”</em>. Until you do, the endpoint doesn't exist — installing changes nothing.</li>
     <li>Create an <strong>Application Password</strong>: <em>Users → Profile → Application Passwords</em>, give it a name like <code>my-agent</code>, and copy the generated password. Agents authenticate as this user and can only see and do what this user can.</li>
-    <li>Copy the <strong>connection snippet</strong> from the settings page into your MCP client (per-client guides below).</li>
+    <li>On the settings page, paste the Application Password into the <strong>snippet builder</strong> — it produces a finished configuration to copy into your MCP client (per-client guides below).</li>
     <li>Ask your agent something: <em>“Give me an overview of my site.”</em></li>
   </ol>
   <img class="shot" src="img/settings.png" alt="FlavourSuite AI settings page: master switch, per-tool toggles, and connection snippet">
   <p>Every tool has its own switch. Read-only tools are on by default; anything that writes data (the <em>propose</em> tools) stays <strong>off until you enable it</strong>.</p>
 
   <h2 id="connect">Connect your agent</h2>
-  <p>Your endpoint is <code>https://example.com/wp-json/flavoursuite-ai/mcp</code> (shown on the settings page). Authentication is HTTP Basic with your WordPress username and the Application Password. Most clients want it as a header:</p>
+  <p>Your endpoint is <code>https://example.com/wp-json/flavoursuite-ai/mcp</code> (shown on the settings page). Authentication is HTTP Basic with your WordPress username and the Application Password, sent as a header:</p>
   <pre><code>Authorization: Basic &lt;token&gt;</code></pre>
-  <p>where <code>&lt;token&gt;</code> is the Base64 of <code>username:application-password</code>. Generate it in a terminal (the spaces WordPress displays in the password are fine — it ignores them):</p>
-  <pre><code>echo -n 'yourname:xxxx xxxx xxxx xxxx xxxx xxxx' | base64</code></pre>
+  <div class="note good">
+    <strong>You don't need to build the token yourself.</strong> The settings page (<em>Settings → FlavourSuite AI → Connect an agent</em>) has a generator: paste your Application Password, click <em>Build connection snippet</em>, and copy the finished configuration — the token is computed in your browser and never sent anywhere. Command-line users can equivalently run <code>echo -n 'yourname:xxxx xxxx xxxx xxxx' | base64</code> (the spaces WordPress shows in the password are fine — it ignores them).
+  </div>
+  <p><strong>Which client?</strong> If you're not a developer, use <strong>Claude Desktop</strong> — it's a one-time copy-paste into a config file, no terminal needed. Developers working in an editor will want Claude Code, Cursor, VS Code, or Codex, which all take the same URL + header.</p>
 
-  <h3>Claude Code</h3>
-  <pre><code>claude mcp add --transport http flavoursuite \
-  https://example.com/wp-json/flavoursuite-ai/mcp \
-  --header "Authorization: Basic &lt;token&gt;"</code></pre>
-  <p>Then check with <code>claude mcp list</code> — the server should show as connected.</p>
-
-  <h3>Cursor</h3>
-  <p>Add to <code>.cursor/mcp.json</code> in your project (or <code>~/.cursor/mcp.json</code> globally):</p>
-  <pre><code>{
-  "mcpServers": {
-    "flavoursuite": {
-      "url": "https://example.com/wp-json/flavoursuite-ai/mcp",
-      "headers": {
-        "Authorization": "Basic &lt;token&gt;"
-      }
-    }
-  }
-}</code></pre>
-
-  <h3>Claude Desktop</h3>
-  <p>Claude Desktop's custom connectors are built around OAuth, so for an Application-Password server use the <code>mcp-remote</code> bridge in <code>claude_desktop_config.json</code> (Settings → Developer → Edit Config):</p>
+  <h3>Claude Desktop (best for non-developers)</h3>
+  <ol>
+    <li>Install <a href="https://nodejs.org">Node.js</a> if you don't have it (the standard installer, all defaults).</li>
+    <li>In Claude Desktop open <em>Settings → Developer → Edit Config</em>. That opens <code>claude_desktop_config.json</code> (on Windows: <code>%APPDATA%\Claude\</code>, on Mac: <code>~/Library/Application Support/Claude/</code>).</li>
+    <li>Paste this, with your site's URL and the token from the settings-page generator, save, and restart Claude Desktop:</li>
+  </ol>
   <pre><code>{
   "mcpServers": {
     "flavoursuite": {
@@ -146,9 +133,56 @@
     }
   }
 }</code></pre>
+  <p>Your site's tools appear under the 🔌 icon in new conversations.</p>
+  <div class="note">
+    <strong>Why the <code>mcp-remote</code> bridge?</strong> Claude's <em>custom connectors</em> UI (Settings → Connectors → Add custom connector) connects from Anthropic's cloud, not your machine, and authenticates with OAuth — so it can't send an Application Password header and can't reach local/intranet sites. The bridge above runs on your computer and works everywhere. A future FlavourSuite version may add OAuth so the connector UI works directly.
+  </div>
+
+  <h3>Claude Code</h3>
+  <pre><code>claude mcp add --transport http flavoursuite \
+  https://example.com/wp-json/flavoursuite-ai/mcp \
+  --header "Authorization: Basic &lt;token&gt;"</code></pre>
+  <p>Verify with <code>claude mcp list</code> — the server should show ✓ connected. Add <code>--scope user</code> to make it available in every project.</p>
+
+  <h3>Cursor</h3>
+  <p>Add to <code>.cursor/mcp.json</code> in your project (or <code>~/.cursor/mcp.json</code> globally; also editable via <em>Settings → Tools &amp; MCP</em>):</p>
+  <pre><code>{
+  "mcpServers": {
+    "flavoursuite": {
+      "url": "https://example.com/wp-json/flavoursuite-ai/mcp",
+      "headers": {
+        "Authorization": "Basic &lt;token&gt;"
+      }
+    }
+  }
+}</code></pre>
+
+  <h3>VS Code (GitHub Copilot)</h3>
+  <p>Copilot's agent mode supports MCP natively. Add to <code>.vscode/mcp.json</code> in your workspace (or your user profile's <code>mcp.json</code>) — note the top-level key is <code>servers</code>, not <code>mcpServers</code>:</p>
+  <pre><code>{
+  "servers": {
+    "flavoursuite": {
+      "type": "http",
+      "url": "https://example.com/wp-json/flavoursuite-ai/mcp",
+      "headers": {
+        "Authorization": "Basic &lt;token&gt;"
+      }
+    }
+  }
+}</code></pre>
+
+  <h3>Codex (OpenAI)</h3>
+  <p>Add to <code>~/.codex/config.toml</code> (shared by the Codex CLI and IDE extension). Use <code>http_headers</code>, not <code>bearer_token_env_var</code> — WordPress expects Basic auth, not a Bearer token:</p>
+  <pre><code>[mcp_servers.flavoursuite]
+url = "https://example.com/wp-json/flavoursuite-ai/mcp"
+http_headers = { "Authorization" = "Basic &lt;token&gt;" }</code></pre>
+  <p>Verify by running <code>/mcp</code> inside a Codex session.</p>
 
   <h3>ChatGPT</h3>
-  <p>ChatGPT supports remote MCP servers via <em>Settings → Apps &amp; Connectors</em> (developer mode). Its custom-connector auth options have historically been limited to OAuth or no-auth; if Basic-auth headers aren't accepted in your plan, front the endpoint with an OAuth-capable proxy or check OpenAI's current connector documentation.</p>
+  <p>ChatGPT adds remote MCP servers via <em>Settings → Connectors → Advanced → Developer Mode</em> (Plus/Pro/Business plans), then <em>Add custom connector</em> with your endpoint URL. Two limitations to know: connections originate from OpenAI's cloud (your site must be publicly reachable over HTTPS), and its custom-connector auth supports OAuth or pasted tokens sent as <em>Bearer</em> — not the Basic scheme Application Passwords use. Until FlavourSuite ships OAuth support, use one of the clients above with ChatGPT-side workflows, or front your endpoint with an OAuth proxy.</p>
+
+  <h3>Other clients (Cline, Windsurf, LibreChat, …)</h3>
+  <p>Any MCP client that supports Streamable HTTP works: give it the endpoint URL and the <code>Authorization: Basic &lt;token&gt;</code> header — the JSON shape is usually identical to the Cursor example above.</p>
 
   <h2 id="tools">What agents can do</h2>
   <table>
