@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlavourSuite AI — Documentation</title>
+<meta name="description" content="How to connect Claude, Cursor, and other AI agents to your WordPress site with FlavourSuite AI: setup, per-client configuration, the Approvals flow, and troubleshooting.">
+<meta property="og:title" content="FlavourSuite AI — Documentation">
+<meta property="og:description" content="Setup, agent connection guides, the Approvals flow, and troubleshooting.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://flavoursuite.github.io/docs/">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+<style>
+  :root {
+    --bg: #0f1216;
+    --panel: #171c23;
+    --border: #2a323d;
+    --text: #e8ecf1;
+    --muted: #9aa7b4;
+    --accent: #ff6b4a;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+  main { width: min(780px, 92%); margin: 0 auto; flex: 1; padding-bottom: 48px; }
+  header { padding: 56px 0 8px; }
+  .brand { font-size: 15px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+  .brand a { color: var(--accent); text-decoration: none; }
+  h1 { font-size: clamp(28px, 4.5vw, 38px); line-height: 1.15; margin: 14px 0 12px; }
+  .lede { color: var(--muted); font-size: 18px; max-width: 60ch; }
+  h2 { font-size: 24px; margin: 52px 0 14px; padding-top: 18px; border-top: 1px solid var(--border); }
+  h3 { font-size: 18.5px; margin: 28px 0 8px; }
+  p, li { color: var(--muted); }
+  p { margin: 12px 0; }
+  strong { color: var(--text); }
+  a { color: var(--accent); }
+  ol, ul { padding-left: 24px; margin: 12px 0; }
+  li { margin: 6px 0; }
+  code {
+    font: 14.5px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 5px; padding: 1px 6px; color: var(--text);
+  }
+  pre {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px; margin: 14px 0;
+    overflow-x: auto;
+  }
+  pre code { background: none; border: none; padding: 0; }
+  .toc { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 20px 26px; margin: 28px 0; }
+  .toc ul { margin: 6px 0 0; list-style: none; padding: 0; column-count: 2; column-gap: 32px; }
+  .toc a { text-decoration: none; }
+  .note {
+    border-left: 3px solid var(--warn);
+    background: var(--panel);
+    border-radius: 0 10px 10px 0;
+    padding: 12px 18px; margin: 14px 0;
+  }
+  .note.good { border-left-color: var(--ok); }
+  img.shot { width: 100%; border: 1px solid var(--border); border-radius: 10px; margin: 14px 0; }
+  table { border-collapse: collapse; width: 100%; margin: 14px 0; font-size: 15.5px; }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; color: var(--muted); }
+  th { color: var(--text); background: var(--panel); }
+  footer { border-top: 1px solid var(--border); margin-top: 48px; }
+  footer div { width: min(780px, 92%); margin: 0 auto; padding: 26px 0; color: var(--muted); font-size: 14.5px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+  footer a { color: var(--muted); }
+  @media (max-width: 640px) { .toc ul { column-count: 1; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="brand"><a href="/">FlavourSuite</a> <span style="color:var(--muted)">/ docs</span></div>
+    <h1>FlavourSuite AI documentation</h1>
+    <p class="lede">Everything you need to connect AI agents — Claude, Cursor, ChatGPT, and any MCP client — to your WordPress site, safely.</p>
+  </header>
+
+  <nav class="toc">
+    <strong>On this page</strong>
+    <ul>
+      <li><a href="#quick-start">Quick start</a></li>
+      <li><a href="#connect">Connect your agent</a></li>
+      <li><a href="#tools">What agents can do</a></li>
+      <li><a href="#approvals">Approvals: agent writes, your call</a></li>
+      <li><a href="#security">Security model</a></li>
+      <li><a href="#troubleshooting">Troubleshooting</a></li>
+    </ul>
+  </nav>
+
+  <h2 id="quick-start">Quick start</h2>
+  <ol>
+    <li><strong>Install and activate</strong> the plugin (WordPress 6.9+, PHP 7.4+).</li>
+    <li>Go to <strong>Settings → FlavourSuite AI</strong> and switch on <em>“Expose this site to AI agents over MCP”</em>. Until you do, the endpoint doesn't exist — installing changes nothing.</li>
+    <li>Create an <strong>Application Password</strong>: <em>Users → Profile → Application Passwords</em>, give it a name like <code>my-agent</code>, and copy the generated password. Agents authenticate as this user and can only see and do what this user can.</li>
+    <li>Copy the <strong>connection snippet</strong> from the settings page into your MCP client (per-client guides below).</li>
+    <li>Ask your agent something: <em>“Give me an overview of my site.”</em></li>
+  </ol>
+  <img class="shot" src="img/settings.png" alt="FlavourSuite AI settings page: master switch, per-tool toggles, and connection snippet">
+  <p>Every tool has its own switch. Read-only tools are on by default; anything that writes data (the <em>propose</em> tools) stays <strong>off until you enable it</strong>.</p>
+
+  <h2 id="connect">Connect your agent</h2>
+  <p>Your endpoint is <code>https://example.com/wp-json/flavoursuite-ai/mcp</code> (shown on the settings page). Authentication is HTTP Basic with your WordPress username and the Application Password. Most clients want it as a header:</p>
+  <pre><code>Authorization: Basic &lt;token&gt;</code></pre>
+  <p>where <code>&lt;token&gt;</code> is the Base64 of <code>username:application-password</code>. Generate it in a terminal (the spaces WordPress displays in the password are fine — it ignores them):</p>
+  <pre><code>echo -n 'yourname:xxxx xxxx xxxx xxxx xxxx xxxx' | base64</code></pre>
+
+  <h3>Claude Code</h3>
+  <pre><code>claude mcp add --transport http flavoursuite \
+  https://example.com/wp-json/flavoursuite-ai/mcp \
+  --header "Authorization: Basic &lt;token&gt;"</code></pre>
+  <p>Then check with <code>claude mcp list</code> — the server should show as connected.</p>
+
+  <h3>Cursor</h3>
+  <p>Add to <code>.cursor/mcp.json</code> in your project (or <code>~/.cursor/mcp.json</code> globally):</p>
+  <pre><code>{
+  "mcpServers": {
+    "flavoursuite": {
+      "url": "https://example.com/wp-json/flavoursuite-ai/mcp",
+      "headers": {
+        "Authorization": "Basic &lt;token&gt;"
+      }
+    }
+  }
+}</code></pre>
+
+  <h3>Claude Desktop</h3>
+  <p>Claude Desktop's custom connectors are built around OAuth, so for an Application-Password server use the <code>mcp-remote</code> bridge in <code>claude_desktop_config.json</code> (Settings → Developer → Edit Config):</p>
+  <pre><code>{
+  "mcpServers": {
+    "flavoursuite": {
+      "command": "npx",
+      "args": [
+        "mcp-remote",
+        "https://example.com/wp-json/flavoursuite-ai/mcp",
+        "--header",
+        "Authorization: Basic &lt;token&gt;"
+      ]
+    }
+  }
+}</code></pre>
+
+  <h3>ChatGPT</h3>
+  <p>ChatGPT supports remote MCP servers via <em>Settings → Apps &amp; Connectors</em> (developer mode). Its custom-connector auth options have historically been limited to OAuth or no-auth; if Basic-auth headers aren't accepted in your plan, front the endpoint with an OAuth-capable proxy or check OpenAI's current connector documentation.</p>
+
+  <h2 id="tools">What agents can do</h2>
+  <table>
+    <tr><th>Tool</th><th>What it does</th><th>Default</th></tr>
+    <tr><td><code>site-overview</code></td><td>WordPress/PHP versions, active plugins, content counts (administrators only)</td><td>on</td></tr>
+    <tr><td><code>list-recent-posts</code></td><td>Recent published entries of any public post type</td><td>on</td></tr>
+    <tr><td><code>search-content</code></td><td>Full-text search across public content, with snippets</td><td>on</td></tr>
+    <tr><td><code>site-policies</code></td><td>Privacy, terms, returns, shipping, FAQ and contact pages with their text</td><td>on</td></tr>
+    <tr><td><code>get-custom-css</code></td><td>Read the current Additional CSS</td><td>on</td></tr>
+    <tr><td><code>list-change-requests</code></td><td>Status of the agent's proposals (pending / applied / rejected / rolled back)</td><td>on</td></tr>
+    <tr><td><code>propose-css</code></td><td>Propose a change to Additional CSS — creates a pending change request</td><td><strong>off</strong></td></tr>
+    <tr><td><code>propose-content-edit</code></td><td>Propose a new title/content for a post or page — same review flow</td><td><strong>off</strong></td></tr>
+    <tr><td><code>woo-store-overview</code></td><td>WooCommerce product/order counts, currency (appears when WooCommerce is active)</td><td>on</td></tr>
+    <tr><td><code>fluent-crm/*</code></td><td>CRM context, campaigns, automations (appears with FluentCRM 3.0+; no contact-level data)</td><td>on</td></tr>
+  </table>
+  <h3>First prompts to try</h3>
+  <ul>
+    <li>“Give me an overview of my site — what's installed and how much content is there?”</li>
+    <li>“What do my shipping and returns policies say? Answer as if a customer asked.”</li>
+    <li>“Search my site for everything mentioning <em>gift cards</em> and summarize it.”</li>
+    <li>“How is the store doing — how many orders are processing right now?”</li>
+    <li>With propose tools enabled: “The headings on my site feel cramped — propose a CSS improvement and I'll review it.”</li>
+  </ul>
+
+  <h2 id="approvals">Approvals: agent writes, your call</h2>
+  <p><strong>No tool writes to your live site.</strong> When an agent uses a propose tool, it creates a <em>change request</em> — a stored before/after pair — and gets back a review link. Nothing changes until a human approves it in wp-admin.</p>
+  <ol>
+    <li>Enable <code>propose-css</code> and/or <code>propose-content-edit</code> under <em>Settings → FlavourSuite AI</em>.</li>
+    <li>The agent proposes; the proposal appears under <strong>Tools → Agent Changes</strong> as a red/green diff.</li>
+    <li>You <strong>Approve &amp; apply</strong>, or <strong>Reject</strong>. Applied changes keep a <strong>Roll back</strong> button that restores the exact before-state.</li>
+  </ol>
+  <img class="shot" src="img/agent-changes.png" alt="Tools → Agent Changes: a pending CSS proposal shown as a before/after diff with Approve & apply and Reject buttons">
+  <div class="note good">
+    <strong>Staleness protection.</strong> Each proposal records the state it was based on. If a human edits the CSS or the post <em>after</em> the proposal was made, applying is refused instead of overwriting that work — same for rolling back something that was edited after it was applied. When that happens, reject the proposal and ask the agent to propose again from the current version.
+  </div>
+  <p>Content edits are additionally covered by WordPress revisions, so there's always a second way back.</p>
+
+  <h2 id="security">Security model</h2>
+  <ul>
+    <li><strong>Off by default.</strong> The MCP endpoint isn't even registered until an administrator enables it.</li>
+    <li><strong>No anonymous access.</strong> Every request must authenticate as a real WordPress user via an Application Password; revoke the password and access ends immediately.</li>
+    <li><strong>Capabilities enforced per call.</strong> Each tool re-checks the connected user's WordPress capabilities — an editor's agent can't read admin-only data.</li>
+    <li><strong>Writes are proposals.</strong> Applying a change re-checks the <em>approver's</em> capabilities at click time, behind a nonce, in wp-admin.</li>
+    <li><strong>Audited.</strong> The settings page shows who called which tool, when, and whether it succeeded. Arguments and results are never stored.</li>
+    <li><strong>Nothing leaves your site.</strong> No API keys, no outbound requests. Agents connect to you.</li>
+  </ul>
+
+  <h2 id="troubleshooting">Troubleshooting</h2>
+  <h3>The agent can't connect (401 / unauthorized)</h3>
+  <ul>
+    <li><strong>Your site must use HTTPS.</strong> WordPress disables Application Passwords over plain HTTP on live sites — this is the most common cause. (Local development environments are exempt.)</li>
+    <li>Check the Base64 token: it must encode <code>username:application-password</code> — your login name, not your email, and the <em>application</em> password, not your account password.</li>
+    <li>Some security plugins disable Application Passwords entirely; check their settings.</li>
+  </ul>
+  <h3>The endpoint returns 404</h3>
+  <ul>
+    <li>The master switch is off — enable it under <em>Settings → FlavourSuite AI</em>. The route genuinely doesn't exist while disabled.</li>
+    <li>Permalinks may need a refresh: <em>Settings → Permalinks → Save</em>.</li>
+  </ul>
+  <h3>A tool is missing from the agent's list</h3>
+  <ul>
+    <li>Propose tools are <strong>off by default</strong> — enable them per tool in settings.</li>
+    <li>WooCommerce and FluentCRM tools only appear while those plugins are active (FluentCRM 3.0+).</li>
+    <li>After changing settings, some clients cache the tool list — reconnect or restart the client.</li>
+  </ul>
+  <h3>Applying a proposal says it's stale</h3>
+  <p>That's the safety net working: the CSS or post changed after the agent proposed. Reject the request and ask the agent to propose again from the current state (it will re-read via <code>get-custom-css</code> or the content tools).</p>
+
+  <p style="margin-top:40px">Something not covered here? <a href="https://github.com/flavoursuite">Open an issue on GitHub</a>.</p>
+</main>
+<footer>
+  <div>
+    <span>© 2026 FlavourSuite</span>
+    <span><a href="/">Home</a> · <a href="https://github.com/flavoursuite">GitHub</a></span>
+  </div>
+</footer>
+</body>
+</html>
